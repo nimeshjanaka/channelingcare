@@ -23,6 +23,8 @@ const LabTestSchema = new Schema({
         enum:['pending','sample_collected','completed','processing'],
         default:'pending'
     },
+    assignTechnician: {type : mongoose.Schema.Types.ObjectId,
+        ref : 'User'},
     reportFile:{type:String},
     updateDate:{type:Date},
 }, { timestamps: true
