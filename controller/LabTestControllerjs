@@ -1,0 +1,141 @@
+const LabTest = require('../model/LabTest');
+const patient = require('../model/Patient');
+const User = require('../model/User');
+
+exports.createLabTest = async (req, res) => {
+    try {
+        const {patient,doctor,testName} = req.body;
+
+        const patientExists = await patient.findById(patient);
+        if(!patientExists) {
+            return res.status(404).json({ message: "Patient not found" });
+        }
+
+        const doctorExists = await User.findById(doctor);
+        if(!doctorExists) {
+            return res.status(404).json({ message: "Doctor not found" });
+        }
+        
+        const labTest = await LabTest.create({
+            patient,
+            doctor,
+            testName
+        });
+        res.status(201).json(labTest);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Get all lab tests
+
+exports.getLabTests = async (req, res) => {
+    try {
+        const labTests = await LabTest.find().populate('patient').populate('doctor').populate('assignedTechnician');
+        res.status(200).json(labTests);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
+// Get single lab tests
+
+exports.createLabTest = async (req, res) => {
+    try {
+        const test = await LabTest.findById(req.params.id).populate('patient').populate('doctor').populate('assignedTechnician');
+        if(!test) {
+            return res.status(404).json({ message: "No lab tests found" });
+        }
+        res.status(200).json(test);
+    } catch (error) {
+        res.status(500).json({ message: error.message });   
+    }
+}
+}
+
+// assign Lab Technician
+
+exports.assignTechnician = async (req, res) => {
+    try {
+        const { technicianId } = req.body;
+
+        const Technician = await User.findById(technicianId);
+        if(!Technician || Technician.role !== 'lab_technician') {
+            return res.status(400).json({ message: "Lab Technician not found" });
+        }
+
+        test.assignTechnician = technicianId;
+        test.status = "processing";
+        await test.save();
+
+        res.status(200).json({
+            message: "Lab Technician assigned successfully",
+            test
+        }); 
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// update test status
+
+exports.updateStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const test = await LabTest.findById(req.params.id);
+        if(!test) {
+            return res.status(404).json({ message: "Lab Test not found" });
+        }
+
+        test.status = status;
+        await test.save();
+
+        res.status(200).json({
+            message: "Lab Test status updated successfully",
+            test
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// upload lab report file
+
+exports.uploadReport = async (req, res) => {
+    try {
+        const test = await LabTest.findById(req.params.id);
+        if(!test) {
+            return res.status(404).json({ message: "Lab Test not found" });
+        }
+
+        test.reportFile = req.file.path;
+        test.status = "completed";
+        test.updatedDate = Date.now();
+        await test.save();
+
+        res.status(200).json({
+            message: "Lab Report uploaded successfully",
+            test
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+//Delete lab test
+
+exports.deleteLabTest = async (req, res) => {
+    try {
+        const test = await LabTest.findByIdAndDelete(req.params.id);
+        if(!test) {
+            return res.status(404).json({ message: "Lab Test not found" });
+        }
+
+        res.status(200).json({
+            message: "Lab Test deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+

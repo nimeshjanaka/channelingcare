@@ -10,6 +10,7 @@ const userRoutes = require('./route/userRoutes');
 const admissionRoutes = require('./route/admissionRoute');
 const appointmentRoutes = require('./route/appointmentRoutes');
 const billingRoutes = require('./route/billingRoute');
+const labRoutes = require('./route/labRoute');
 
 //Database connection
 mongoose 
@@ -25,6 +26,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/admissions', admissionRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/labs', labRoutes);
 
 //Root Endpoint
 app.get('/', (req, res) => {
